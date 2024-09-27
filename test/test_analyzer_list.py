@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 """Tests for search query analysis"""
 import unittest
-import search_query
 
 from search_query.and_query import AndQuery
-from search_query.constants import Fields
 from search_query.not_query import NotQuery
 from search_query.or_query import OrQuery
-from search_query.query import Query
 from search_query.query import SearchField
+from search_query.constants import Fields
 
 # pylint: disable=line-too-long
 # flake8: noqa: E501
