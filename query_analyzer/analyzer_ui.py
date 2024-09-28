@@ -53,9 +53,9 @@ class analyzer_UI(tk.Tk):
         frame.columnconfigure(0, weight=4)
         frame.columnconfigure(1, weight=1)
 
-        # Fill in column headlines
-        query_headline = ttk.Label(frame, text="Query and Subqueries", font=("Helvetica", 14, "bold"))
-        yield_headline = ttk.Label(frame, text="Yield", font=("Helvetica", 14, "bold"))
+        # Fill in column headlines SOLVE ISSUE HERE!!!!!!!!!
+        query_headline = ttk.Label(frame, width=640, text="Query and Subqueries", font=("Helvetica", 14, "bold"))
+        yield_headline = ttk.Label(frame, width=160,text="Yield", font=("Helvetica", 14, "bold"))
         query_headline.grid(column=0, row=0, padx=5, pady=5, sticky=tk.W)
         yield_headline.grid(column=1, row=0, padx=5, pady=5)
 
@@ -75,7 +75,7 @@ class analyzer_UI(tk.Tk):
         frame["relief"] = "groove"
 
         # create headline
-        headline = ttk.Label(frame, text="Suggestions", font=("Helvetica", 14, "bold"))
+        headline = ttk.Label(frame, width=800, text="Suggestions", font=("Helvetica", 14, "bold"))
         headline.grid(column=0, row=0, padx=5, pady=5, sticky=tk.W)
 
         # insert suggestions to grid
