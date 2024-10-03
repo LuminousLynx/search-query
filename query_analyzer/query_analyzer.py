@@ -26,7 +26,7 @@ class QueryAnalyzer:
         '''Main function for yield analysis'''
         
         # Make query list with all subqueries
-        query_list = self.parse_query_to_list(query=query, current_pos=0)
+        query_list = self.parse_query_to_list(query=query)
 
         # Collect yields of all terms into list
         yield_list = self.collector.collect(query_list=query_list, platform=platform)
@@ -39,15 +39,17 @@ class QueryAnalyzer:
                  "suggestions": suggestions}
         
         self.UI.run_UI(data=data)
-        
-        # Question: How to test yield w/o access to certain databases?
+
 
     def parse_query_to_list(self, 
                             query: Query, 
                             current_pos: int = 0,
-                            query_list: typing.List[Query] = [],
-                            ) -> list[Query]:
+                            query_list: typing.Optional[typing.List[Query]] = None,
+                        ) -> typing.List[Query]:
         '''Function to recursively parse the query and all its subqueries into a list'''
+
+        if query_list is None:
+            query_list = []
 
         if current_pos == 0:
             query_list.append(query)
