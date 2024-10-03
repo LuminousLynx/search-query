@@ -9,6 +9,8 @@ OrQuery das Argument "children" eigentlich annehmen sollte. Woher kommt dieser F
 
 ## Test-Queries für Evaluation
 Ich habe folgende Queries für den peer-evaluation-test ausgewählt und wie folgt manipuliert:
+
+
     Query: 
     Manipulation:
 
