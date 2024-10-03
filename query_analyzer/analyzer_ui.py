@@ -5,6 +5,8 @@ import tkinter as tk
 from tkinter import ttk
 
 from search_query.query import Query
+from search_query.and_query import AndQuery
+from search_query.or_query import OrQuery
 
 
 import typing
@@ -32,19 +34,19 @@ class AnalyzerUI(tk.Tk):
         
         width= self.winfo_screenwidth() 
         height= self.winfo_screenheight()
-        self.geometry("%dx%d" % (width, height))
+        self.geometry("%dx%d" % (width/1.3, height/1.3))
 
         self.iconbitmap("./query_analyzer/analyzer.ico")
 
         # Main Window layout and frames with content
-        upper_frame = self.insert_querylist(list=data["list"])
+        upper_frame = self.insert_querylist(query_list=data["list"])
         upper_frame.pack(fill="both", expand=True)
 
-        lower_frame = self.insert_suggestions(list=data["suggestions"])
+        lower_frame = self.insert_suggestions(suggestion_list=data["suggestions"])
         lower_frame.pack(fill="both", expand=True)
 
 
-    def insert_querylist(self, list: typing.List[typing.Dict]) -> tk.Frame:
+    def insert_querylist(self, query_list: typing.List[typing.Dict]) -> tk.Frame:
         '''Create first frame and insert query strings and yield into its grid'''
 
         #create basic frame layout
@@ -66,7 +68,7 @@ class AnalyzerUI(tk.Tk):
         # Insert entries from list into grid: Query strings in the first column, yields in the second
         row_count = 1
 
-        for entry in list:
+        for entry in query_list:
             if isinstance(entry["query"], Query):
                 query_string = entry["query"].to_string()
                 query_label = ttk.Label(upper_frame, text=query_string, font=("Helvetica", 12))
@@ -87,7 +89,7 @@ class AnalyzerUI(tk.Tk):
         return upper_frame
 
 
-    def insert_suggestions(self, list: typing.List[str]) -> tk.Frame:
+    def insert_suggestions(self, suggestion_list: typing.List[str]) -> tk.Frame:
         '''Create second frame and insert suggestion text'''
 
         # create basic frame layout
@@ -102,7 +104,7 @@ class AnalyzerUI(tk.Tk):
         # insert suggestions to grid
         row_count = 1
 
-        for entry in list:
+        for entry in suggestion_list:
             suggestion = ttk.Label(lower_frame, text=entry, font=("Helvetica", 12))
             suggestion.grid(column=0, row=row_count, padx=5, pady=5, sticky=tk.W)
             row_count += 1
@@ -121,6 +123,13 @@ if __name__ == "__main__":
     data = {}
     data["list"] = []
     data["suggestions"] = []
+
+    query1 = OrQuery(children=["test0", "test4", "test5"])
+    query2 = OrQuery(children=["test1", "test2"])
+    query3 = AndQuery(children=[query1, query2])
+
+    query_list = [{"query": query3, "yield": 204}, {"query": query2, "yield": 2232}, {"query": query1, "yield": 341}]
+    data["list"].extend(query_list)
 
     for a in range(5):
         data["suggestions"].append("test" * (a+1))
