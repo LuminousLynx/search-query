@@ -83,6 +83,55 @@ PLATFORM_COMBINED_FIELDS_MAP = {
 }
 
 
+class YIELD(Enum):
+    '''Yield ranges for query analyzer, based on PRISMA statement'''
+
+    UPPER_LIMIT = 3000
+    UPPER_OPTIMUM = 2000
+    LOWER_OPTIMUM = 200
+    LOWER_LIMIT = 50
+
+    # For further development: Implement a method for the user to choose their own desired yield range. Naturally, this Enum then should be relocated outside of the constants module 
+    # as it would not be a constant anymore.
+
+    @classmethod
+    def is_in_optimal_range(y: int) -> bool:
+        return y in range(YIELD.LOWER_OPTIMUM.value, YIELD.UPPER_OPTIMUM.value+1)
+    
+    @classmethod
+    def is_low(y: int) -> bool:
+        return y in range(YIELD.LOWER_LIMIT.value, YIELD.LOWER_OPTIMUM.value)
+    
+    @classmethod
+    def is_high(y: int) -> bool:
+        return y in range(YIELD.UPPER_OPTIMUM.value, YIELD.UPPER_LIMIT.value)
+    
+    @classmethod
+    def is_restrictive(y: int) -> bool:
+        return y <= YIELD.LOWER_LIMIT.value
+    
+    @classmethod
+    def is_dynamite(y: int) -> bool:
+        return y >= YIELD.UPPER_LIMIT.value
+    
+
+class SUGGESTIONS(Enum):
+    '''Suggestions for different query faults'''
+
+    TOO_HIGH_NO_RESTRICTION = "Your query yields a large number of results. This might originate from missing restrictions with AND or NOT operators. I suggest restrictions or changes to the following part of your query: "
+    TOO_HIGH_SOFT_RESTRICTION = "Your query yields a large number of results. The restrictions you implemented with AND or NOT operators might not be tight enough. I suggest further restrictions or changes to the following part of your query: "
+    TOO_HIGH_ONLY_OR = "Your query yields a large number of results. The yield of the subterms is satisfactory, but extending them with OR operators might cause this problem. Try omitting unnecessary OR connections."
+
+    TOO_LOW_NO_EXTENSION = "The yield of your query will be too small for a systematic review. I suggest extending the following term with OR operators: "
+    TOO_LOW_SOFT_EXTENSION = "Your query only yields a small number of results. The extensions you implemented with OR operators might not be sufficient. I suggest extending your query here: "
+
+    LITTLE_TOO_HIGH = "The yield of your query is fine, but might be a little high for conducting a systematic review. I suggest small restrictions or changes here: "
+    LITTLE_TOO_LOW = "Your query might yield just too few results for a systematic review. I suggest small extensions or changes here: "
+    OK = "The yield of your query is within the suggested range. Ut bene succedat! "
+
+    # This class can be extended to further improve useability of the query analyzer
+
+
 class ExitCodes:
     """Exit codes"""
 
