@@ -12,7 +12,7 @@ from query_advisor import QueryAdvisor
 
 # pylint: disable=line-too-long
 
-class query_analyzer:
+class QueryAnalyzer:
     '''Analyzer class, provides basic functions for converting query to list, query yield analysis, and UI display'''
 
     def __init__(self) -> None:
