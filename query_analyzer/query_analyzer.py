@@ -6,32 +6,41 @@ import typing
 from search_query.query import Query
 from search_query.constants import PLATFORM
 from search_query.constants import Operators
+from analyzer_ui import AnalyzerUI
+from yield_collector import YieldCollector
+from query_advisor import QueryAdvisor
 
 # pylint: disable=line-too-long
 
 class query_analyzer:
     '''Analyzer class, provides basic functions for converting query to list, query yield analysis, and UI display'''
 
-    # add: self.ui as conection point to user interface
-    # global variable as it doesn't need to be changed even if called repeatedly
-    # add module: ui
+    def __init__(self) -> None:
+        '''Initializing Query Analyzer'''
+        self.UI = AnalyzerUI()
+        self.collector = YieldCollector()
+        self.advisor = QueryAdvisor()
 
-    def __init__(self, 
-                 query: Query, 
-                 ) -> None:
-        '''Initialization for query analyzer'''
-        self.query = query
 
-    def analyze_yield(self) -> None:
+    def analyze_yield(self, query: Query, platform: PLATFORM) -> None:
         '''Main function for yield analysis'''
-
-        query_list = self.parse_query_to_list(query=self.query, current_pos=0)
         
-        # TO DO: save yields in list of dicts with query strings and yield as kv pairs
-        # how to test yield w/o access to certain databases?
-        # add functions/module: estimating yield from samples, retrieving and saving yield for every entry in list
-        # add module: interpreter of results that can give suggestions to user 
-        # pass query/yield dict to ui
+        # Make query list with all subqueries
+        query_list = self.parse_query_to_list(query=query, current_pos=0)
+
+        # Collect yields of all terms into list
+        yield_list = self.collector.collect(query_list=query_list, platform=platform)
+
+        # Create suggestions for query refinement based on yields in list
+        suggestions = self.advisor.create_suggestions(yield_list=yield_list)
+
+        # Display subqueries, yields and suggestions to user via the UI
+        data = {"list": yield_list,
+                 "suggestions": suggestions}
+        
+        self.UI.run_UI(data=data)
+        
+        # Question: How to test yield w/o access to certain databases?
 
     def parse_query_to_list(self, 
                             query: Query, 
