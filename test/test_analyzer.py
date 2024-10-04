@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Tests for search query analysis"""
+"""Unittests for search query analysis"""
 import unittest
 
 from search_query.and_query import AndQuery
