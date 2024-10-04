@@ -47,7 +47,7 @@ class AnalyzerUI(tk.Tk):
 
 
     def insert_querylist(self, query_list: typing.List[typing.Dict]) -> tk.Frame:
-        '''Create first frame and insert query strings and yield into its grid'''
+        '''Create first frame and insert query strings and yields into its grid'''
 
         #create basic frame layout
         upper_frame = ttk.Frame(self)
@@ -129,8 +129,8 @@ if __name__ == "__main__":
     query3 = AndQuery(children=[query1, query2])
 
     query_list = [{"query": query3, "yield": 204}, {"query": query2, "yield": 2232}, {"query": query1, "yield": 341}]
-    data["list"].extend(query_list)
-
+    data["list"] = query_list
+    
     for a in range(5):
         data["suggestions"].append("test" * (a+1))
     

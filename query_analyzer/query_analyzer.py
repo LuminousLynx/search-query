@@ -35,9 +35,7 @@ class QueryAnalyzer:
         suggestions = self.advisor.create_suggestions(yield_list=yield_list)
 
         # Display subqueries, yields and suggestions to user via the UI
-        data = {"list": yield_list,
-                 "suggestions": suggestions}
-        
+        data = {"list": yield_list, "suggestions": suggestions}
         self.UI.run_UI(data=data)
 
 
