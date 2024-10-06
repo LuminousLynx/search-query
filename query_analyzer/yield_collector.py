@@ -83,8 +83,8 @@ class YieldCollector():
     def collect_estimated(self, query_list: typing.List[Query], api: str) -> typing.List[typing.Dict]:
         '''Method for collecting estimated yields for APIs that do not support boolean queries'''
         
-        yield_list = []
-        complex_query_list = []
+        yield_list = typing.List[typing.Dict]
+        complex_query_list = typing.List[Query]
 
         # first, collect yields of single expression queries and save complex queries for later
         for query in query_list:
@@ -100,26 +100,11 @@ class YieldCollector():
         for query in complex_query_list:
 
             if isinstance(query, OrQuery):
-                children_yield_list = [{"query": child, "yield": self.get_yield_by_query(yield_list=yield_list, query=child)} for child in query.children]
-                query_yield = sum([child["yield"] for child in children_yield_list])
+                query_yield = self.collect_or_estimated(yield_list=yield_list, query=query)
                 yield_list = self.add_to_yield_list(yield_list=yield_list, query=query, query_yield=query_yield)
 
             elif isinstance(query, AndQuery):
-                children_samples = typing.List[typing.List[str]]
-                for child in query.children:
-                    children_samples.extend(self.get_doi_samples(query=child, api=api))
-
-                # secure data quality by removing non-DOI entries
-                for doi in children_samples:
-                    if not self.matches_doi_pattern(doi):
-                        children_samples.remove(doi)
-
-                unique_dois = set(children_samples)
-                doi_frequencies = Counter(children_samples)
-                shared_dois = [element for element, count in doi_frequencies.items() if count == len(query.children)]
-                shared_doi_percentage = len(shared_dois) / len(unique_dois)
-
-                query_yield = math.ceil(shared_doi_percentage * sum([self.get_yield_by_query(yield_list=yield_list, query=child) for child in query.children]))
+                query_yield = self.collect_and_estimated(yield_list=yield_list, query=query, api=api)
                 yield_list = self.add_to_yield_list(yield_list=yield_list, query=query, query_yield=query_yield)
 
             elif isinstance(query, NotQuery):
@@ -127,6 +112,35 @@ class YieldCollector():
                 pass
 
         return yield_list
+    
+
+    def collect_or_estimated(self, yield_list: typing.List[typing.Dict], query: Query) -> int:
+        '''Method for collecting estimated yields for OR queries'''
+
+        children_yield_list = [{"query": child, "yield": self.get_yield_by_query(yield_list=yield_list, query=child)} for child in query.children]
+        return sum([child["yield"] for child in children_yield_list])
+
+
+    def collect_and_estimated(self, yield_list: typing.List[typing.Dict], query: Query, api: str) -> int:
+        '''Method for collecting estimated yields for AND queries'''
+
+        children_samples = typing.List[typing.List[str]]
+
+        for child in query.children:
+            children_samples.extend(self.get_doi_samples(query=child, api=api))
+
+        # secure data quality by removing non-DOI entries
+        for doi in children_samples:
+            if not self.matches_doi_pattern(doi):
+                children_samples.remove(doi)
+
+        unique_dois = set(children_samples)
+        doi_frequencies = Counter(children_samples)
+        shared_dois = [element for element, count in doi_frequencies.items() if count == len(query.children)]
+        shared_doi_percentage = len(shared_dois) / len(unique_dois)
+
+        return math.ceil(shared_doi_percentage * sum([self.get_yield_by_query(yield_list=yield_list, query=child) for child in query.children]))
+
 
     # Helper methods
 
