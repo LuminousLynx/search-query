@@ -11,11 +11,13 @@ from search_query.or_query import OrQuery
 
 import typing
 
+# pylint: disable=line-too-long
+
 class AnalyzerUI(tk.Tk):
     '''Class for UI object with main methods for UI display and information passing'''
 
     def __init__(self) -> None:
-        '''initializing tkinter as framework'''
+        '''Initializing tkinter as framework'''
 
         super().__init__()
 

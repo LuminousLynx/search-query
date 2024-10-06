@@ -120,10 +120,11 @@ class SUGGESTIONS(Enum):
 
     TOO_HIGH_NO_RESTRICTION = "This part of your query yields a large number of results. This might originate from missing restrictions with AND or NOT operators. I suggest restrictions: "
     TOO_HIGH_SOFT_RESTRICTION = "This part of your query yields a large number of results. The restrictions you implemented with AND or NOT operators might not be tight enough: "
-    TOO_HIGH_ONLY_OR = "The yield of your subterms is satisfactory, but extending them with OR operators might cause a problem. Try omitting unnecessary OR connections."
+    TOO_HIGH_ONLY_OR = "The yield of your subterms is satisfactory, but extending them with OR operators might cause a problem. Try omitting unnecessary OR connections: "
 
     TOO_LOW_NO_EXTENSION = "I suggest extending the following term with OR operators: "
     TOO_LOW_SOFT_EXTENSION = "The extensions you implemented with OR operators might not be sufficient. I suggest extending your query here: "
+    TOO_LOW_ONLY_AND = "The yield of your subterms is satisfactory. Connecting them with AND operators reduces the yield too much. Try omitting too restrictive AND connections: "
 
     LITTLE_TOO_HIGH = "The yield of your query might be a little high for conducting a systematic review. Here is my analysis: "
     LITTLE_TOO_LOW = "Your query might yield just too few results for a systematic review. Here is my analysis: "
