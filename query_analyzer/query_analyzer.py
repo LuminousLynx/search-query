@@ -13,7 +13,7 @@ from query_advisor import QueryAdvisor
 # pylint: disable=line-too-long
 
 class QueryAnalyzer:
-    '''Analyzer class, provides basic functions for converting query to list, query yield analysis, and UI display'''
+    '''Main Analyzer class. Initializes UI, YieldCollector and QueryAdvisor, calls Methods for yield analysis'''
 
     def __init__(self) -> None:
         '''Initializing Query Analyzer'''
@@ -22,7 +22,7 @@ class QueryAnalyzer:
         self.advisor = QueryAdvisor()
 
 
-    def analyze_yield(self, query: Query, platform: PLATFORM) -> None:
+    def analyze_yield(self, query: Query, platform: str) -> None:
         '''Main function for yield analysis'''
         
         # Make query list with all subqueries
