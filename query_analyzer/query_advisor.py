@@ -8,10 +8,8 @@ from search_query.and_query import AndQuery
 from search_query.not_query import NotQuery
 from search_query.or_query import OrQuery
 
-from search_query.constants import PLATFORM
-from search_query.constants import Operators
-from search_query.constants import SUGGESTIONS
-from search_query.constants import YIELD
+from query_analyzer.analyzer_constants import SUGGESTIONS
+from query_analyzer.analyzer_constants import YIELD
 
 # pylint: disable=line-too-long
 
