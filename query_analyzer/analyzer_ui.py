@@ -126,9 +126,9 @@ if __name__ == "__main__":
     data["list"] = []
     data["suggestions"] = []
 
-    query1 = OrQuery(children=["test0", "test4", "test5"])
-    query2 = OrQuery(children=["test1", "test2"])
-    query3 = AndQuery(children=[query1, query2])
+    query1 = OrQuery(["test0", "test4", "test5"], search_field="Abstract")
+    query2 = OrQuery(["test1", "test2"], search_field="Abstract")
+    query3 = AndQuery([query1, query2], search_field="Abstract")
 
     query_list = [{"query": query3, "yield": 204}, {"query": query2, "yield": 2232}, {"query": query1, "yield": 341}]
     data["list"] = query_list

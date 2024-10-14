@@ -4,8 +4,7 @@
 import typing
 
 from search_query.query import Query
-from search_query.constants import PLATFORM
-from search_query.constants import Operators
+
 from analyzer_ui import AnalyzerUI
 from yield_collector import YieldCollector
 from query_advisor import QueryAdvisor
