@@ -30,11 +30,16 @@ To create a query programmatically, run:
 
 ```Python
 from search_query import OrQuery, AndQuery
+from query_analyzer import QueryAnalyzer
 
 # Typical building-blocks approach
 digital_synonyms = OrQuery(["digital", "virtual", "online"], search_field="Abstract")
 work_synonyms = OrQuery(["work", "labor", "service"], search_field="Abstract")
 query = AndQuery([digital_synonyms, work_synonyms], search_field="Author Keywords")
+
+# To then run the Query Analyzer (optional):
+analyzer = QueryAnalyzer()
+analyzer.analyze_yield(query=query, platform="crossref")
 ```
 
 Parameters:
@@ -43,6 +48,8 @@ Parameters:
 - search field: search field to which the query should be applied (available options: TODO: GIVE EXAMPLES AND LINK TO DOCS)
 
 **TODO : implement a user-friendly version of OrQuery / AndQuery, which accepts lists of strings/queries and search_fields as strings**
+
+To read more about the query analyzer and how to use it, go to its [documentation](query_analyzer/analyzer_README.md)
 
 To load a JSON query file, run the parser:
 
