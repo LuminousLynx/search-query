@@ -49,7 +49,7 @@ Parameters:
 
 **TODO : implement a user-friendly version of OrQuery / AndQuery, which accepts lists of strings/queries and search_fields as strings**
 
-To read more about the query analyzer and how to use it, go to its [documentation](query_analyzer/analyzer_README.md)
+To read more about the query analyzer and how to use it, go to its [documentation](query_analyzer/analyzer_README.md).
 
 To load a JSON query file, run the parser:
 

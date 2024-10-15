@@ -1,9 +1,5 @@
 # Fragen an Professor Wagner // Notizen
 
-## Yield Collection
-
-## UI
-
 ## Notes
 Constants in eigene Klasse verschieben -- DONE
 
