@@ -15,16 +15,19 @@ import typing
 class AnalyzerUI(tk.Tk):
     '''Class for UI object with main methods for UI display and information passing'''
 
+
     def __init__(self) -> None:
         '''Initializing tkinter as framework'''
 
         super().__init__()
+
 
     def run_UI(self, data: typing.Dict) -> None:            # data has "list"=List of dicts with query and yield
         '''Main function for UI display'''                  # and "suggestions"= List of strings for display
         
         self.build_window(data=data)
         self.mainloop()
+
 
     def build_window(self, data: typing.Dict) -> None:
         '''Main Window builder, geometry and title'''
