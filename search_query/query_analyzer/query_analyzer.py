@@ -5,9 +5,9 @@ import typing
 
 from search_query.query import Query
 
-from analyzer_ui import AnalyzerUI
-from yield_collector import YieldCollector
-from query_advisor import QueryAdvisor
+from search_query.query_analyzer.analyzer_ui import AnalyzerUI
+from search_query.query_analyzer.yield_collector import YieldCollector
+from search_query.query_analyzer.query_advisor import QueryAdvisor
 
 # pylint: disable=line-too-long
 
