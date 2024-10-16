@@ -14,8 +14,6 @@ from search_query.or_query import OrQuery
 
 from search_query.constants import PLATFORM
 
-
-
 # pylint: disable=line-too-long
 
 class YieldCollector():
@@ -43,7 +41,7 @@ class YieldCollector():
     def collect_wos(self, query_list: typing.List[Query]) -> typing.List[typing.Dict]:
         '''Method for collecting yields from Web of Science platform'''
         
-        yield_list = []
+        yield_list = typing.List[typing.Dict]
 
         for query in query_list:
             query_yield = 10 #TODO: implement yield collection for WOS
@@ -55,7 +53,7 @@ class YieldCollector():
     def collect_pubmed(self, query_list: typing.List[Query]) -> typing.List[typing.Dict]:
         '''Method for collecting yields from PubMed platform'''
         
-        yield_list = []
+        yield_list = typing.List[typing.Dict]
 
         for query in query_list:
             query_yield = 10 #TODO: implement yield collection for PubMed
@@ -67,7 +65,7 @@ class YieldCollector():
     def collect_ebsco(self, query_list: typing.List[Query]) -> typing.List[typing.Dict]:
         '''Method for collecting yields from EBSCO platform'''
         
-        yield_list = []
+        yield_list = typing.List[typing.Dict]
 
         for query in query_list:
             query_yield = 10 #TODO: implement yield collection for EBSCO
@@ -102,9 +100,8 @@ class YieldCollector():
         for query in complex_query_list:
 
             # check if query has already been collected and skip if it has
-            for entry in yield_list:
-                if entry["query"] == query:
-                    continue
+            if query in [item["query"] for item in yield_list]:
+                continue
 
             if isinstance(query, OrQuery):
                 query_results = self.collect_or_estimated(query=query, doi_list=doi_list)
@@ -213,6 +210,7 @@ class YieldCollector():
             if item["query"] == query:
                 return item["dois"]
         return None
+
 
     def get_parent_query(self, query: Query, complex_query_list: typing.List[Query]) -> Query:
         '''Helper method for getting the parent query of a subquery '''

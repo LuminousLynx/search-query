@@ -5,8 +5,7 @@ import tkinter as tk
 from tkinter import ttk
 
 from search_query.query import Query
-from search_query.and_query import AndQuery
-from search_query.or_query import OrQuery
+
 
 
 import typing
@@ -25,7 +24,6 @@ class AnalyzerUI(tk.Tk):
         '''Main function for UI display'''                  # and "suggestions"= List of strings for display
         
         self.build_window(data=data)
-        
         self.mainloop()
 
     def build_window(self, data: typing.Dict) -> None:
@@ -38,17 +36,17 @@ class AnalyzerUI(tk.Tk):
         height= self.winfo_screenheight()
         self.geometry("%dx%d" % (width/1.3, height/1.3))
 
-        self.iconbitmap("./query_analyzer/analyzer.ico")
+        self.iconbitmap("./search_query/query_analyzer/analyzer.ico")
 
         # Main Window layout and frames with content
-        upper_frame = self.insert_querylist(query_list=data["list"])
+        upper_frame = self.insert_querylist(query_list=data["list"], suggestion_list=data["suggestions"])
         upper_frame.pack(fill="both", expand=True)
 
         lower_frame = self.insert_suggestions(suggestion_list=data["suggestions"])
         lower_frame.pack(fill="both", expand=True)
 
 
-    def insert_querylist(self, query_list: typing.List[typing.Dict]) -> tk.Frame:
+    def insert_querylist(self, query_list: typing.List[typing.Dict], suggestion_list: typing.List[str]) -> tk.Frame:
         '''Create first frame and insert query strings and yields into its grid'''
 
         #create basic frame layout
@@ -72,13 +70,36 @@ class AnalyzerUI(tk.Tk):
 
         for entry in query_list:
             if isinstance(entry["query"], Query):
-                query_string = entry["query"].to_string()
-                query_label = ttk.Label(upper_frame, text=query_string, font=("Helvetica", 12))
-                query_label.grid(column=0, row=row_count, padx=5, pady=5, sticky=tk.W)
 
-                yield_label = ttk.Label(upper_frame, text=str(entry["yield"]), font=("Helvetica", 12))
-                yield_label.grid(column=1, row=row_count, padx=5, pady=5, sticky=tk.W)
-            
+                if entry["query"].operator:
+                    query_string = entry["query"].to_string(syntax="pubmed")
+                    if query_string in suggestion_list[-1] or query_string in suggestion_list[-2]:
+                        query_label = ttk.Label(upper_frame, text=query_string, font=("Helvetica", 12), background="orange")
+                        query_label.grid(column=0, row=row_count, padx=5, pady=5, sticky=tk.W)
+
+                        yield_label = ttk.Label(upper_frame, text=str(entry["yield"]), font=("Helvetica", 12), background="orange")
+                        yield_label.grid(column=1, row=row_count, padx=5, pady=5, sticky=tk.W)
+                    else:
+                        query_label = ttk.Label(upper_frame, text=query_string, font=("Helvetica", 12))
+                        query_label.grid(column=0, row=row_count, padx=5, pady=5, sticky=tk.W)
+
+                        yield_label = ttk.Label(upper_frame, text=str(entry["yield"]), font=("Helvetica", 12))
+                        yield_label.grid(column=1, row=row_count, padx=5, pady=5, sticky=tk.W)
+                else:
+                    query_string = entry["query"].to_string()
+                    if query_string in suggestion_list[-1] and query_string in suggestion_list[-2]:
+                        query_label = ttk.Label(upper_frame, text=query_string, font=("Helvetica", 12), background="orange")
+                        query_label.grid(column=0, row=row_count, padx=5, pady=5, sticky=tk.W)
+
+                        yield_label = ttk.Label(upper_frame, text=str(entry["yield"]), font=("Helvetica", 12), background="orange")
+                        yield_label.grid(column=1, row=row_count, padx=5, pady=5, sticky=tk.W)
+                    else:
+                        query_label = ttk.Label(upper_frame, text=query_string, font=("Helvetica", 12))
+                        query_label.grid(column=0, row=row_count, padx=5, pady=5, sticky=tk.W)
+
+                        yield_label = ttk.Label(upper_frame, text=str(entry["yield"]), font=("Helvetica", 12))
+                        yield_label.grid(column=1, row=row_count, padx=5, pady=5, sticky=tk.W)
+                
             else:
                 query_label = ttk.Label(upper_frame, text="Query not found", font=("Helvetica", 12))
                 query_label.grid(column=0, row=row_count, padx=5, pady=5, sticky=tk.W)
