@@ -64,9 +64,10 @@ Query Analyzer was developed as part of the following Bachelor's thesis:
 
 ## Not what you are looking for?
 
-This python package was developed with purpose of integrating it into other literature management tools. If that isn't your use case, it migth be useful for you to look at these related tools:
+If Query Analyzer is not the right tool for your analysis, it might be worth it to look at these related programs:
 
-**TODO: Enter link to litsearchr and searchrefiner**
+[litsearchr](https://github.com/elizagrames/litsearchr.git) -> an R package for query refinement (Grames et al., 2019)
+[searchrefiner](https://github.com/ielab/searchrefiner.git) -> a tool for query visualization and analysis (Scells & Zuccon, 2018)
 
 
 ## License
