@@ -11,8 +11,9 @@ from search_query.query import Query
 from search_query.and_query import AndQuery
 from search_query.not_query import NotQuery
 from search_query.or_query import OrQuery
+from search_query.query_analyzer.colrev_collector import ColrevCollector
 
-from search_query.constants import PLATFORM
+
 
 # pylint: disable=line-too-long
 
@@ -20,57 +21,27 @@ class YieldCollector():
     '''Provides methods for collecting the yields of a query and its subqueries'''
 
     def __init__(self) -> None:
-        pass
+        self.colrev = ColrevCollector()
 
 
     def collect(self, query_list: typing.List[Query], platform: str) -> typing.List[typing.Dict]:
         '''Main Method that gets called from the query analyzer class. Decides on method of yield collection and runs it.'''
 
-        if platform == PLATFORM.WOS.value:
-            yield_list = self.collect_wos(query_list=query_list)
-        elif platform == PLATFORM.PUBMED.value:
-            yield_list = self.collect_pubmed(query_list=query_list)
-        elif platform == PLATFORM.EBSCO.value: 
-            yield_list = self.collect_ebsco(query_list=query_list)
+        if "colrev" in platform.lower():
+            if "pubmed" in platform.lower():
+                for query in query_list:
+                    query_yield = self.colrev.collect(query=query, api=platform)
+                    yield_list = self.add_to_yield_list(yield_list=yield_list, query=query, query_yield=query_yield["yield"])
+            elif "crossref" in platform.lower():
+                yield_list = self.collect_estimated(query_list=query_list, api=platform)
+            
+            else:
+                # TODO: Implement other platforms with their colrev API connection
+                raise NotImplementedError("This platform is not supported yet.")
         else:
-            yield_list = self.collect_estimated(query_list=query_list)
+            # TODO: Implement other search environments
+            raise NotImplementedError("This platform is not supported yet.")
         
-        return yield_list
-    
-
-    def collect_wos(self, query_list: typing.List[Query]) -> typing.List[typing.Dict]:
-        '''Method for collecting yields from Web of Science platform'''
-        
-        yield_list = typing.List[typing.Dict]
-
-        for query in query_list:
-            query_yield = 10 #TODO: implement yield collection for WOS
-            yield_list = self.add_to_yield_list(yield_list=yield_list, query=query, query_yield=query_yield)
-
-        return yield_list
-    
-
-    def collect_pubmed(self, query_list: typing.List[Query]) -> typing.List[typing.Dict]:
-        '''Method for collecting yields from PubMed platform'''
-        
-        yield_list = typing.List[typing.Dict]
-
-        for query in query_list:
-            query_yield = 10 #TODO: implement yield collection for PubMed
-            yield_list = self.add_to_yield_list(yield_list=yield_list, query=query, query_yield=query_yield)
-
-        return yield_list
-
-
-    def collect_ebsco(self, query_list: typing.List[Query]) -> typing.List[typing.Dict]:
-        '''Method for collecting yields from EBSCO platform'''
-        
-        yield_list = typing.List[typing.Dict]
-
-        for query in query_list:
-            query_yield = 10 #TODO: implement yield collection for EBSCO
-            yield_list = self.add_to_yield_list(yield_list=yield_list, query=query, query_yield=query_yield)
-
         return yield_list
     
 
@@ -84,10 +55,7 @@ class YieldCollector():
         # first, collect yields of single expression queries and save complex queries for later
         for query in query_list:
             if not query.operator:
-                query_results = self.get_query_results(query=query, api=api)
-                
-                # secure data quality by removing non-DOI entries
-                query_results["dois"] = self.validate_doi_list(doi_list=query_results["dois"])
+                query_results = self.colrev.collect(query=query, api=api)
                 
                 # add dois and yield to respective lists
                 yield_list = self.add_to_yield_list(yield_list=yield_list, query=query, query_yield=query_results["yield"])
@@ -219,23 +187,3 @@ class YieldCollector():
             if query in complex_query.children:
                 return complex_query
         return None
-    
-    
-    def get_query_results(self, query: Query, api: str) -> typing.List[str]:
-        '''Helper method for collecting a sample of DOIs to estimate complex query yield'''
-
-        # TODO: Implement: collecting at most 200 DOIs and adding them to a list, also from complex queries themselves (recursion)
-        pass
-    
-
-    def validate_doi_list(self, doi_list: typing.List[str]) -> typing.List[str]:
-        '''Helper method for validating a list of DOIs'''
-
-        return [doi for doi in doi_list if self.matches_doi_pattern(doi)]
-
-
-    def matches_doi_pattern(self, doi: str) -> bool:
-        '''Helper method for checking if a string matches the DOI pattern'''
-
-        doi_pattern = r"10.\d{4,9}/[-._;()/:A-Z0-9]+"
-        return re.match(doi_pattern, doi)
