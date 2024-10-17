@@ -1,6 +1,6 @@
 # Query Analyzer
 
-Query Analyzer is an optional extension of the search-query package. It allows the user to analyze the yield of the search query they built with search-query. Momentarily, it depends on the CoLRev environment to perform searches in Crossref for demo purposes. Other search sources or environments may be implemented in the future. 
+Query Analyzer is an optional extension of the search-query package. It allows the user to analyze the yield of the search query they built with search-query. Momentarily, it depends on the CoLRev environment to perform searches in Crossref or PubMed for demo purposes. Other search sources or environments may be implemented in the future. 
 
 The program can be used programmatically after building a query with search-query. 
 
@@ -38,13 +38,18 @@ query = AndQuery([digital_synonyms, work_synonyms], search_field="Author Keyword
 
 # Now, call Query Analyzer:
 analyzer = QueryAnalyzer()
-analyzer.analyze_yield(query=query, platform="crossref")
+analyzer.analyze_yield(query=query, platform="colrev.crossref")
 ```
 
 Parameters for Query Analyzer:
 
 - query: the query object built within the file
-- platform: the search source where you want to perform the query (for now, only crossref is accessible)
+- platform: the search source where you want to perform the query (for now, only crossref and PubMed are accessible)
+
+If you decide to search with Crossref, Query Analyzer will use its yield estimation as Crossref does not support nested queries in its API. Yields for complex queries will be estimated with the help of DOI samples.
+Searching with PubMed will directly request the total yield of the given (sub-)query. 
+
+**Please remember to always add "colrev" to the platform argument. Otherwise, the search will not work. Further search tools might be implemented in the future.**
 
 
 ## UI
@@ -69,7 +74,3 @@ If Query Analyzer is not the right tool for your analysis, it might be worth it 
 [litsearchr](https://github.com/elizagrames/litsearchr.git) -> an R package for query refinement (Grames et al., 2019)
 [searchrefiner](https://github.com/ielab/searchrefiner.git) -> a tool for query visualization and analysis (Scells & Zuccon, 2018)
 
-
-## License
-
-This project is distributed under the [MIT License](LICENSE).
