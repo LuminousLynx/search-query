@@ -1,10 +1,10 @@
 import pytest
-from query_analyzer.query_advisor import QueryAdvisor
+from search_query.query_analyzer.query_advisor import QueryAdvisor
 from search_query.query import Query
 from search_query.and_query import AndQuery
 from search_query.not_query import NotQuery
 from search_query.or_query import OrQuery
-from query_analyzer.analyzer_constants import SUGGESTIONS, YIELD
+from search_query.query_analyzer.analyzer_constants import SUGGESTIONS, YIELD
 
 class TestQueryAdvisor:
 
