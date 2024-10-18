@@ -17,23 +17,23 @@ class YIELD(Enum):
     # For further development: Implement a method for the user to choose their own desired yield range. Naturally, this Enum then should be relocated outside of the constants module 
     # as it would not be a constant anymore.
 
-    @classmethod
+    @staticmethod
     def is_in_optimal_range(y: int) -> bool:
         return y in range(YIELD.LOWER_OPTIMUM.value, YIELD.UPPER_OPTIMUM.value+1)
     
-    @classmethod
+    @staticmethod
     def is_low(y: int) -> bool:
         return y in range(YIELD.LOWER_LIMIT.value, YIELD.LOWER_OPTIMUM.value)
     
-    @classmethod
+    @staticmethod
     def is_high(y: int) -> bool:
         return y in range(YIELD.UPPER_OPTIMUM.value, YIELD.UPPER_LIMIT.value)
     
-    @classmethod
+    @staticmethod
     def is_restrictive(y: int) -> bool:
         return y <= YIELD.LOWER_LIMIT.value
     
-    @classmethod
+    @staticmethod
     def is_dynamite(y: int) -> bool:
         return y >= YIELD.UPPER_LIMIT.value
     

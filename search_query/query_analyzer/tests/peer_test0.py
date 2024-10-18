@@ -32,6 +32,7 @@ from search_query.query import Query
 from search_query.and_query import AndQuery
 from search_query.or_query import OrQuery
 from search_query.not_query import NotQuery
+from search_query.constants import Fields
 
 from search_query.query_analyzer.query_analyzer import QueryAnalyzer
 
@@ -42,44 +43,44 @@ from search_query.query_analyzer.query_analyzer import QueryAnalyzer
 Original query: 
 (instrument[tiab] OR instruments[tiab] OR Measurement[tiab] OR Measurements[tiab] OR Measures[tiab] OR Measure[tiab] OR scale[tiab] OR scales[tiab] OR validate[tiab] OR validation[tiab] OR validates[tiab] OR validated[tiab] OR validity[tiab])
 AND 
-NOT (bisexual[tiab] OR "transgender"[tiab]) NOT ("animals"[MeSH] NOT "humans"[MeSH]))
+NOT (bisexual[tiab] OR "transgender"[tiab]) NOT ("animals"[tiab] NOT "humans"[tiab]))
 '''
 
 # Define the terms
 terms1 = [
-    Query('instrument'),
-    Query('instruments'),
-    Query('Measurement'),
-    Query('Measurements'),
-    Query('Measures'),
-    Query('Measure'),
-    Query('scale'),
-    Query('scales'),
-    Query('validate'),
-    Query('validation'),
-    Query('validates'),
-    Query('validated'),
-    Query('validity')
+    Query('instrument', search_field=Fields.ABSTRACT),
+    Query('instruments', search_field=Fields.ABSTRACT),
+    Query('Measurement', search_field=Fields.ABSTRACT),
+    Query('Measurements', search_field=Fields.ABSTRACT),
+    Query('Measures', search_field=Fields.ABSTRACT),
+    Query('Measure', search_field=Fields.ABSTRACT),
+    Query('scale', search_field=Fields.ABSTRACT),
+    Query('scales', search_field=Fields.ABSTRACT),
+    Query('validate', search_field=Fields.ABSTRACT),
+    Query('validation', search_field=Fields.ABSTRACT),
+    Query('validates', search_field=Fields.ABSTRACT),
+    Query('validated', search_field=Fields.ABSTRACT),
+    Query('validity', search_field=Fields.ABSTRACT)
 ]
 
 terms2 = [
-    Query('bisexual'),
-    Query('"transgender"')
+    Query('bisexual', search_field=Fields.ABSTRACT),
+    Query('"transgender"', search_field=Fields.ABSTRACT)
 ]
 
 terms3 = [
-    Query('"animals"'),
-    Query('"humans"')
+    Query('"animals"', search_field=Fields.ABSTRACT),
+    Query('"humans"', search_field=Fields.ABSTRACT)
 ]
 
 # Build the query
 query = AndQuery(
-    [OrQuery(terms1, search_field="tiab"),
+    [OrQuery(terms1, search_field=Fields.ABSTRACT),
     NotQuery(
-        [OrQuery(terms2, search_field="tiab"), NotQuery(terms3, search_field="MeSH")],
-        search_field="tiab"
+        [OrQuery(terms2, search_field=Fields.ABSTRACT), NotQuery(terms3, search_field=Fields.ABSTRACT)],
+        search_field=Fields.ABSTRACT
     )],
-    search_field="tiab"
+    search_field=Fields.ABSTRACT
 )
 
 if __name__ == "__main__":

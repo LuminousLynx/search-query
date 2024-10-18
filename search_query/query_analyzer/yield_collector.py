@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 """Class for collecting yields of (sub)queries"""
 
-import typing
 import re
 import math
 
@@ -24,14 +23,16 @@ class YieldCollector():
         self.colrev = ColrevCollector()
 
 
-    def collect(self, query_list: typing.List[Query], platform: str) -> typing.List[typing.Dict]:
+    def collect(self, query_list: list[Query], platform: str) -> list[dict]:
         '''Main Method that gets called from the query analyzer class. Decides on method of yield collection and runs it.'''
+
+        yield_list = []
 
         if "colrev" in platform.lower():
             if "pubmed" in platform.lower():
                 for query in query_list:
                     query_yield = self.colrev.collect(query=query, api=platform)
-                    yield_list = self.add_to_yield_list(yield_list=yield_list, query=query, query_yield=query_yield["yield"])
+                    yield_list.append({"query": query, "yield": query_yield["yield"]})
             elif "crossref" in platform.lower():
                 yield_list = self.collect_estimated(query_list=query_list, api=platform)
             
@@ -45,15 +46,15 @@ class YieldCollector():
         return yield_list
     
 
-    def collect_estimated(self, query_list: typing.List[Query], api: str) -> typing.List[typing.Dict]:
+    def collect_estimated(self, query_list: list[Query], api: str) -> list[dict]:
         '''Method for collecting estimated yields for APIs that do not support boolean queries'''
         
-        yield_list = typing.List[typing.Dict]
-        doi_list = typing.List[typing.Dict]
-        complex_query_list = typing.List[Query]
+        yield_list = []
+        doi_list = []
+        complex_query_list = []
 
         # reverse query list to keep correct order of queries
-        query_list = query_list.reverse()
+        query_list.reverse()
 
         # first, collect yields of single expression queries and save complex queries for later
         for query in query_list:
@@ -64,8 +65,8 @@ class YieldCollector():
                 query_results["dois"] = [doi for doi in query_results["dois"] if self.matches_doi_pattern(doi)]
                 
                 # add dois and yield to respective lists
-                yield_list = self.add_to_yield_list(yield_list=yield_list, query=query, query_yield=query_results["yield"])
-                doi_list = self.add_to_doi_list(doi_list=doi_list, query=query, dois=query_results["dois"])
+                yield_list.append({"query": query, "yield": query_results["yield"]})
+                doi_list.append({"query": query, "dois": query_results["dois"]})
             else:
                 complex_query_list.append(query)
 
@@ -86,22 +87,25 @@ class YieldCollector():
                 query_results = self.collect_not_estimated(yield_list=yield_list, query=query, complex_query_list=complex_query_list, api=api)
 
                 # set yield of NOT query to 0, because it wouldn't make sense to actually collect it
-                yield_list = self.add_to_yield_list(yield_list=yield_list, query=query, query_yield=0)
+                yield_list.append({"query": query, "yield": 0})
 
                 # enter yield and doi sample of parent query into respective lists
-                yield_list = self.add_to_yield_list(yield_list=yield_list, query=self.get_parent_query(query=query, complex_query_list=complex_query_list), query_yield=query_results["yield"])
-                doi_list = self.add_to_doi_list(doi_list=doi_list, query=self.get_parent_query(query=query, complex_query_list=complex_query_list), dois=query_results["dois"])
+                parent = self.get_parent_query(query=query, complex_query_list=complex_query_list)
+                yield_list.append({"query": parent, "yield": query_results["yield"]})
+                doi_list.append({"query": parent, "dois": query_results["dois"]})
 
                 # skip to next iteration
                 continue
             
-            yield_list = self.add_to_yield_list(yield_list=yield_list, query=query, query_yield=query_results["yield"])
-            doi_list = self.add_to_doi_list(doi_list=doi_list, query=query, dois=query_results["dois"])
+            yield_list.append({"query": query, "yield": query_results["yield"]})
+            doi_list.append({"query": query, "yield": query_results["dois"]})
 
-        return yield_list.reverse()
+        yield_list.reverse()
+        
+        return yield_list
     
 
-    def collect_or_estimated(self, query: Query, doi_list: typing.List[typing.Dict] = None) -> typing.List[typing.Dict]:
+    def collect_or_estimated(self, query: Query, doi_list: list[dict] = None) -> list[dict]:
         '''Method for collecting estimated yields and DOI samples for OR queries'''
 
         children_doi_list = [{"query": child, "dois": self.get_doi_by_query(doi_list=doi_list, query=child)} for child in query.children]
@@ -109,7 +113,7 @@ class YieldCollector():
         return {"yield": len(no_duplicate_sample), "dois": no_duplicate_sample}
 
 
-    def collect_and_estimated(self, yield_list: typing.List[typing.Dict], query: Query, doi_list: typing.List[typing.Dict] = None) -> typing.List[typing.Dict]:
+    def collect_and_estimated(self, yield_list: list[dict], query: Query, doi_list: list[dict] = None) -> list[dict]:
         '''Method for collecting estimated yields and DOI samples for AND queries'''
 
         children_doi_list = [{"query": child, "dois": self.get_doi_by_query(doi_list=doi_list, query=child)} for child in query.children]
@@ -119,10 +123,10 @@ class YieldCollector():
         shared_dois = [element for element, count in doi_frequencies.items() if count == len(query.children)]
         shared_doi_percentage = len(shared_dois) / len(no_duplicate_sample)
 
-        return {"yield": math.ceil(shared_doi_percentage * sum([self.get_yield_by_query(yield_list=yield_list, query=child) for child in query.children])), "dois": shared_dois}
+        return {"yield": int(math.ceil(shared_doi_percentage * sum([self.get_yield_by_query(yield_list=yield_list, query=child) for child in query.children]))), "dois": shared_dois}
 
 
-    def collect_not_estimated(self, yield_list: typing.List[typing.Dict], query: Query, complex_query_list: typing.List[Query], doi_list: typing.List[typing.Dict] = None) -> typing.List[typing.Dict]:
+    def collect_not_estimated(self, yield_list: list[dict], query: Query, complex_query_list: list[Query], doi_list: list[dict] = None) -> list[dict]:
         '''Method for collecting estimated yields and DOI samples for queries containing NOT queries'''
 
         # As it would not make much sense to calculate the yield of a NOT query, this method calculates the yield of the parent query and returns both doi list and yield.
@@ -140,7 +144,7 @@ class YieldCollector():
             sibling_doi_list = [{"query": sibling, "dois": self.get_doi_by_query(doi_list=doi_list, query=sibling)} for sibling in sibling_queries]
             doi_frequencies = Counter(sibling_doi_list)
             sibling_sample = [element for element, count in doi_frequencies.items() if count == len(sibling_queries)]
-            query_yield = math.ceil(len(sibling_sample) / len(sibling_doi_list) * sum([self.get_yield_by_query(yield_list=yield_list, query=sibling) for sibling in sibling_queries]))
+            query_yield = int(math.ceil(len(sibling_sample) / len(sibling_doi_list)) * sum([self.get_yield_by_query(yield_list=yield_list, query=sibling) for sibling in sibling_queries]))
             
         this_sample = self.get_doi_by_query(doi_list=doi_list, query=query)
 
@@ -154,20 +158,9 @@ class YieldCollector():
 
 
     # Helper methods
-
-    def add_to_yield_list(self, yield_list: typing.List[typing.Dict], query: Query, query_yield: int) -> typing.List[typing.Dict]:
-        '''Helper method for adding query and its yield to the yield list'''
-        
-        return yield_list.append({"query": query, "yield": query_yield})
-
-
-    def add_to_doi_list(self, doi_list: typing.List[typing.Dict], query: Query, dois: typing.List[str]) -> typing.List[typing.Dict]:
-        '''Helper method for adding query and its DOIs to the DOI list'''
-
-        return doi_list.append({"query": query, "dois": dois})
     
 
-    def get_yield_by_query(self, yield_list: typing.List[typing.Dict], query: Query) -> int:
+    def get_yield_by_query(self, yield_list: list[dict], query: Query) -> int:
         '''Helper method for extracting yield by query from yield list'''
 
         for item in yield_list:
@@ -176,7 +169,7 @@ class YieldCollector():
         return None
 
 
-    def get_doi_by_query(self, doi_list: typing.List[typing.Dict], query: Query) -> typing.List[str]:
+    def get_doi_by_query(self, doi_list: list[dict], query: Query) -> list[str]:
         '''Helper method for extracting DOIs by query from DOI list'''
 
         for item in doi_list:
@@ -185,7 +178,7 @@ class YieldCollector():
         return None
 
 
-    def get_parent_query(self, query: Query, complex_query_list: typing.List[Query]) -> Query:
+    def get_parent_query(self, query: Query, complex_query_list: list[Query]) -> Query:
         '''Helper method for getting the parent query of a subquery '''
 
         for complex_query in complex_query_list:

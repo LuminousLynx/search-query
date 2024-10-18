@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 """Tool for analyzing yield of queries"""
 
-import typing
-
 from search_query.query import Query
 
 from search_query.query_analyzer.analyzer_ui import AnalyzerUI
@@ -27,33 +25,36 @@ class QueryAnalyzer:
         
         # Make query list with all subqueries
         query_list = self.parse_query_to_list(query=query)
+        print("[INFO] Query list parsed successfully.")
 
         # Collect yields of all terms into list
         yield_list = self.collector.collect(query_list=query_list, platform=platform)
+        print("[INFO] Yields collected successfully.")
 
         # Create suggestions for query refinement based on yields in list
         suggestions = self.advisor.create_suggestions(yield_list=yield_list)
-
+        print("[INFO] Suggestions created successfully.")
+        
         # Display subqueries, yields and suggestions to user via the UI
         data = {"list": yield_list, "suggestions": suggestions}
         self.UI.run_UI(data=data)
 
 
-    def parse_query_to_list(self, query: Query, current_pos: int = 0) -> typing.List[Query]:
+    def parse_query_to_list(self, query: Query, current_pos: int = 0) -> list:
         '''Function to parse the query and all its subqueries into a list'''
 
-        query_list = typing.List[Query]
+        parsed_queries = []
 
         if current_pos == 0:
-            query_list.append(query)
+            parsed_queries.append(query)
 
-        while current_pos < len(query_list):
-            query = query_list[current_pos]
+        while current_pos < len(parsed_queries):
+            query = parsed_queries[current_pos]
 
             if query.operator:
                 for child in query.children:
-                    query_list.append(child)
+                    parsed_queries.append(child)
             
             current_pos += 1
         
-        return query_list
+        return parsed_queries

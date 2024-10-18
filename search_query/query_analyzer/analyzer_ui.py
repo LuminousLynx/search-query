@@ -8,7 +8,7 @@ from search_query.query import Query
 
 
 
-import typing
+
 
 # pylint: disable=line-too-long
 
@@ -22,14 +22,14 @@ class AnalyzerUI(tk.Tk):
         super().__init__()
 
 
-    def run_UI(self, data: typing.Dict) -> None:            # data has "list"=List of dicts with query and yield
+    def run_UI(self, data: dict) -> None:            # data has "list"=List of dicts with query and yield
         '''Main function for UI display'''                  # and "suggestions"= List of strings for display
         
         self.build_window(data=data)
         self.mainloop()
 
 
-    def build_window(self, data: typing.Dict) -> None:
+    def build_window(self, data: dict) -> None:
         '''Main Window builder, geometry and title'''
         
         # Main Window attributes
@@ -66,7 +66,7 @@ class AnalyzerUI(tk.Tk):
         lower_frame.pack(fill="both", expand=True)
 
 
-    def insert_querylist(self, canvas: tk.Canvas, query_list: typing.List[typing.Dict], suggestion_list: typing.List[str]) -> tk.Frame:
+    def insert_querylist(self, canvas: tk.Canvas, query_list: list[dict], suggestion_list: list[str]) -> tk.Frame:
         '''Create first frame and insert query strings and yields into its grid'''
 
         #create basic frame 
@@ -130,7 +130,7 @@ class AnalyzerUI(tk.Tk):
         return upper_frame
 
 
-    def insert_suggestions(self, suggestion_list: typing.List[str]) -> tk.Frame:
+    def insert_suggestions(self, suggestion_list: list[str]) -> tk.Frame:
         '''Create second frame and insert suggestion text'''
 
         # create basic frame layout

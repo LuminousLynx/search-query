@@ -10,14 +10,12 @@ from search_query.query_analyzer.analyzer_constants import SUGGESTIONS
 from search_query.constants import Fields
 
 
-import typing
-
 # pylint: disable=line-too-long
 
 # simulate query for UI test
 data = {}
-data["list"] = typing.List[typing.Dict]
-data["suggestions"] = typing.List[str]
+data["list"] = list[dict]
+data["suggestions"] = list[str]
 
 query00 = Query("test0", search_field=Fields.ABSTRACT)
 query01 = Query("test1", search_field=Fields.ABSTRACT)
