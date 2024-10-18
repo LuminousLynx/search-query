@@ -39,26 +39,21 @@ class QueryAnalyzer:
         self.UI.run_UI(data=data)
 
 
-    def parse_query_to_list(self, 
-                            query: Query, 
-                            current_pos: int = 0,
-                            query_list: typing.Optional[typing.List[Query]] = None,
-                        ) -> typing.List[Query]:
-        '''Function to recursively parse the query and all its subqueries into a list'''
+    def parse_query_to_list(self, query: Query, current_pos: int = 0) -> typing.List[Query]:
+        '''Function to parse the query and all its subqueries into a list'''
 
-        if query_list is None:
-            query_list = typing.List[Query]
+        query_list = typing.List[Query]
 
         if current_pos == 0:
             query_list.append(query)
 
-        if query.operator:
-            for child in query.children:
-                query_list.append(child)
-            
-        current_pos += 1
+        while current_pos < len(query_list):
+            query = query_list[current_pos]
 
-        if current_pos < len(query_list):
-            query_list = self.parse_query_to_list(query=query_list[current_pos], current_pos=current_pos, query_list=query_list)
+            if query.operator:
+                for child in query.children:
+                    query_list.append(child)
+            
+            current_pos += 1
         
         return query_list

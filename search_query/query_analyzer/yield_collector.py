@@ -52,10 +52,16 @@ class YieldCollector():
         doi_list = typing.List[typing.Dict]
         complex_query_list = typing.List[Query]
 
+        # reverse query list to keep correct order of queries
+        query_list = query_list.reverse()
+
         # first, collect yields of single expression queries and save complex queries for later
         for query in query_list:
             if not query.operator:
                 query_results = self.colrev.collect(query=query, api=api)
+
+                # validate DOIs to eliminate empty or faulty entries
+                query_results["dois"] = [doi for doi in query_results["dois"] if self.matches_doi_pattern(doi)]
                 
                 # add dois and yield to respective lists
                 yield_list = self.add_to_yield_list(yield_list=yield_list, query=query, query_yield=query_results["yield"])
@@ -64,7 +70,6 @@ class YieldCollector():
                 complex_query_list.append(query)
 
         # second, estimate yields of complex queries, starting from the simplest ones, because the yield and doi samples of their children are already known
-        complex_query_list.reverse()
         for query in complex_query_list:
 
             # check if query has already been collected and skip if it has
@@ -187,3 +192,10 @@ class YieldCollector():
             if query in complex_query.children:
                 return complex_query
         return None
+    
+
+    def matches_doi_pattern(self, doi: str) -> bool:
+        '''Helper method for validating DOIs'''
+
+        pattern = re.compile(r'^10.\d{4,9}/[-._;()/:A-Z0-9]+$', re.IGNORECASE)
+        return bool(pattern.match(doi))

@@ -41,19 +41,27 @@ class AnalyzerUI(tk.Tk):
 
         self.iconbitmap("./search_query/query_analyzer/analyzer.ico")
 
-        # Main Window layout and frames with content, upper frame with scrollbar
-        canvas = tk.Canvas(self, borderwidth=0)
-        upper_frame = self.insert_querylist(canvas=canvas, query_list=data["list"], suggestion_list=data["suggestions"])
-        upper_frame.pack(fill="both", expand=True)
+        # Create top frame for the canvas and scrollbar
+        top_frame = ttk.Frame(self)
+        top_frame.pack(fill="both", expand=True)
 
-        scrollbar = ttk.Scrollbar(self, orient="vertical", command=canvas.yview)
-        canvas.configure(yscrollcommand=scrollbar.set)
-        scrollbar.pack(side="right", fill="y")
+        # Create canvas
+        canvas = tk.Canvas(top_frame)
         canvas.pack(side="left", fill="both", expand=True)
+
+        # Create scrollbar
+        scrollbar = ttk.Scrollbar(top_frame, orient="vertical", command=canvas.yview)
+        scrollbar.pack(side="right", fill="y")
+        canvas.configure(yscrollcommand=scrollbar.set)
+
+        # Create upper frame inside the canvas for queries and yield
+        upper_frame = self.insert_querylist(canvas=canvas, query_list=data["list"], suggestion_list=data["suggestions"])
         canvas.create_window((0, 0), window=upper_frame, anchor="nw")
 
+        # Configure canvas scroll region
         upper_frame.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
 
+        # Create lower frame for suggestions
         lower_frame = self.insert_suggestions(suggestion_list=data["suggestions"])
         lower_frame.pack(fill="both", expand=True)
 
@@ -61,10 +69,8 @@ class AnalyzerUI(tk.Tk):
     def insert_querylist(self, canvas: tk.Canvas, query_list: typing.List[typing.Dict], suggestion_list: typing.List[str]) -> tk.Frame:
         '''Create first frame and insert query strings and yields into its grid'''
 
-        #create basic frame layout
+        #create basic frame 
         upper_frame = ttk.Frame(canvas)
-        upper_frame["borderwidth"] = 5
-        upper_frame["relief"] = "groove"
 
         # Create grid layout
         upper_frame.grid_columnconfigure(0, weight=3)

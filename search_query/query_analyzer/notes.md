@@ -1,4 +1,4 @@
-# Fragen an Professor Wagner // Notizen
+# Notizen
 
 ## Notes
 Constants in eigene Klasse verschieben -- DONE
