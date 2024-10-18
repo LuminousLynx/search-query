@@ -39,14 +39,13 @@ class ColrevCollector():
             query_string = query.to_string()
         query_string = re.sub(r'\[.{2}\]', '', query_string)
         query_string = query_string.replace(" ", "+")
-        print("Searching: ", query_string)
 
         pubmed_query = str("https://pubmed.ncbi.nlm.nih.gov/?term=")+query_string
 
         try:
             results = pubmed_api._get_pubmed_ids(query=pubmed_query, retstart=0, page=1)
         except IndexError:
-            print("No results found for query: ", query.to_string())
+            print("[WARNING] No results found for query: ", query.to_string())
             results = {"totalResults": 0}
 
         return {"yield": results["totalResults"]}

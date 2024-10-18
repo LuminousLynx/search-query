@@ -43,7 +43,7 @@ from search_query.query_analyzer.query_analyzer import QueryAnalyzer
 Original query: 
 (instrument[tiab] OR instruments[tiab] OR Measurement[tiab] OR Measurements[tiab] OR Measures[tiab] OR Measure[tiab] OR scale[tiab] OR scales[tiab] OR validate[tiab] OR validation[tiab] OR validates[tiab] OR validated[tiab] OR validity[tiab])
 AND 
-NOT (bisexual[tiab] OR "transgender"[tiab]) NOT ("animals"[tiab] NOT "humans"[tiab]))
+(bisexual[tiab] OR "transgender"[tiab]) AND ("humans"[tiab] NOT "animals"[tiab]))
 '''
 
 # Define the terms
@@ -76,7 +76,7 @@ terms3 = [
 # Build the query
 query = AndQuery(
     [OrQuery(terms1, search_field=Fields.ABSTRACT),
-    NotQuery(
+    AndQuery(
         [OrQuery(terms2, search_field=Fields.ABSTRACT), NotQuery(terms3, search_field=Fields.ABSTRACT)],
         search_field=Fields.ABSTRACT
     )],

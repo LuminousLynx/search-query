@@ -28,14 +28,16 @@ class QueryAnalyzer:
         print("[INFO] Query list parsed successfully.")
 
         # Collect yields of all terms into list
+        print("[INFO] Collecting yields.")
         yield_list = self.collector.collect(query_list=query_list, platform=platform)
         print("[INFO] Yields collected successfully.")
 
         # Create suggestions for query refinement based on yields in list
         suggestions = self.advisor.create_suggestions(yield_list=yield_list)
         print("[INFO] Suggestions created successfully.")
-        
+
         # Display subqueries, yields and suggestions to user via the UI
+        print("[INFO] Displaying results to user.")
         data = {"list": yield_list, "suggestions": suggestions}
         self.UI.run_UI(data=data)
 
