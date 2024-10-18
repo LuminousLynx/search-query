@@ -37,7 +37,7 @@ class QueryAnalyzer:
         print("[INFO] Suggestions created successfully.")
 
         # Display subqueries, yields and suggestions to user via the UI
-        print("[INFO] Displaying results to user.")
+        print("[INFO] Displaying results in window.")
         data = {"list": yield_list, "suggestions": suggestions}
         self.UI.run_UI(data=data)
 

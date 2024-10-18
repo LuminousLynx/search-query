@@ -41,9 +41,11 @@ from search_query.query_analyzer.query_analyzer import QueryAnalyzer
 
 '''
 Original query: 
-(instrument[tiab] OR instruments[tiab] OR Measurement[tiab] OR Measurements[tiab] OR Measures[tiab] OR Measure[tiab] OR scale[tiab] OR scales[tiab] OR validate[tiab] OR validation[tiab] OR validates[tiab] OR validated[tiab] OR validity[tiab])
+    (instrument[tiab] OR instruments[tiab] OR Measurement[tiab] OR Measurements[tiab] OR Measures[tiab] OR Measure[tiab] OR scale[tiab] OR scales[tiab] OR validate[tiab] OR validation[tiab] OR validates[tiab] OR validated[tiab] OR validity[tiab])
 AND 
-(bisexual[tiab] OR "transgender"[tiab]) AND ("humans"[tiab] NOT "animals"[tiab]))
+        ((bisexual[tiab] OR "transgender"[tiab]) 
+    AND 
+        ("humans"[tiab] NOT "animals"[tiab]))
 '''
 
 # Define the terms
@@ -69,8 +71,8 @@ terms2 = [
 ]
 
 terms3 = [
-    Query('"animals"', search_field=Fields.ABSTRACT),
-    Query('"humans"', search_field=Fields.ABSTRACT)
+    Query('"humans"', search_field=Fields.ABSTRACT),
+    Query('"animals"', search_field=Fields.ABSTRACT)
 ]
 
 # Build the query

@@ -40,6 +40,7 @@ class ColrevCollector():
         query_string = re.sub(r'\[.{2}\]', '', query_string)
         query_string = query_string.replace(" ", "+")
 
+        print("[INFO] Querying PubMed with: ", query_string)
         pubmed_query = str("https://pubmed.ncbi.nlm.nih.gov/?term=")+query_string
 
         try:
@@ -60,6 +61,7 @@ class ColrevCollector():
 
         crossref_endpoint = Endpoint(request_url=url)
 
+        print("[INFO] Querying Crossref with: ", query_string)
         result_yield = crossref_endpoint.get_nr()
         result_sample = crossref_endpoint.get_dois()
         
