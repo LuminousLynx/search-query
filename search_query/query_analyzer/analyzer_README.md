@@ -54,6 +54,7 @@ Searching with PubMed will directly request the total yield of the given (sub-)q
 **Please remember to always add "colrev" to the platform argument. Otherwise, the search will not work.**
 
 To use the API of [Crossref](https://github.com/CoLRev-Environment/colrev/blob/main/colrev/packages/crossref/src/crossref_api.py): platform="colrev.crossref"
+
 To use the API of [PubMed](https://github.com/CoLRev-Environment/colrev/blob/main/colrev/packages/pubmed/src/pubmed_api.py): platform="colrev.pubmed"
 
 ### other Environments
