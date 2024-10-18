@@ -3,6 +3,7 @@
 # pylint: disable=too-few-public-methods
 # pylint: disable=line-too-long
 from enum import Enum
+import random 
 
 # noqa: E501
 
@@ -57,3 +58,18 @@ class SUGGESTIONS(Enum):
     OK = "The yield of your query is within the suggested range. Ut bene succedat! "
 
     # This class can be extended to further improve useability of the query analyzer.
+
+
+class CHESSPIECE:
+    '''Chesspiece symbols for query visualization'''
+    @staticmethod
+    def randomChessPiece() -> str:
+        chessPieces = (
+        u"\u2654",
+        u"\u2655",
+        u"\u2656",
+        u"\u2657",
+        u"\u2658",
+        u"\u2659"
+        )
+        return chessPieces[random.randint(0, len(chessPieces)-1)]

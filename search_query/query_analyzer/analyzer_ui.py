@@ -5,10 +5,7 @@ import tkinter as tk
 from tkinter import ttk
 
 from search_query.query import Query
-
-
-
-
+from search_query.query_analyzer.analyzer_constants import CHESSPIECE
 
 # pylint: disable=line-too-long
 
@@ -35,9 +32,9 @@ class AnalyzerUI(tk.Tk):
         # Main Window attributes
         self.title("Query Analyzer")
         
-        width= self.winfo_screenwidth() 
-        height= self.winfo_screenheight()
-        self.geometry("%dx%d" % (width/1.3, height/1.3))
+        width = self.winfo_screenwidth() 
+        height = self.winfo_screenheight()
+        self.geometry("%dx%d" % (width/1.1, height/1.1))
 
         self.iconbitmap("./search_query/query_analyzer/analyzer.ico")
 
@@ -53,20 +50,21 @@ class AnalyzerUI(tk.Tk):
         scrollbar = ttk.Scrollbar(top_frame, orient="vertical", command=canvas.yview)
         scrollbar.pack(side="right", fill="y")
         canvas.configure(yscrollcommand=scrollbar.set)
+        canvas.bind_all("<MouseWheel>", lambda e: canvas.yview_scroll(int(-1*(e.delta/120)), "units"))
 
         # Create upper frame inside the canvas for queries and yield
-        upper_frame = self.insert_querylist(canvas=canvas, query_list=data["list"], suggestion_list=data["suggestions"])
+        upper_frame = self.insert_querylist(canvas=canvas, query_list=data["list"], suggestion_list=data["suggestions"], width=width)
         canvas.create_window((0, 0), window=upper_frame, anchor="nw")
 
         # Configure canvas scroll region
         upper_frame.bind("<Configure>", lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
 
         # Create lower frame for suggestions
-        lower_frame = self.insert_suggestions(suggestion_list=data["suggestions"])
+        lower_frame = self.insert_suggestions(suggestion_list=data["suggestions"], width=width)
         lower_frame.pack(fill="both", expand=True)
 
 
-    def insert_querylist(self, canvas: tk.Canvas, query_list: list[dict], suggestion_list: list[str]) -> tk.Frame:
+    def insert_querylist(self, canvas: tk.Canvas, query_list: list[dict], suggestion_list: list[str], width: int) -> tk.Frame:
         '''Create first frame and insert query strings and yields into its grid'''
 
         #create basic frame 
@@ -88,34 +86,33 @@ class AnalyzerUI(tk.Tk):
 
         for entry in query_list:
             if isinstance(entry["query"], Query):
-
                 if entry["query"].operator:
                     query_string = entry["query"].to_string(syntax="pubmed")
-                    if query_string in suggestion_list[-1] or query_string in suggestion_list[-2]:
-                        query_label = ttk.Label(upper_frame, text=query_string, font=("Helvetica", 12), background="orange")
+                    if query_string in suggestion_list:
+                        query_label = ttk.Label(upper_frame, text=query_string, font=("Helvetica", 12), wraplength=width/1.5, background="orange")
                         query_label.grid(column=0, row=row_count, padx=5, pady=5, sticky=tk.W)
 
-                        yield_label = ttk.Label(upper_frame, text=str(entry["yield"]), font=("Helvetica", 12), background="orange")
+                        yield_label = ttk.Label(upper_frame, text=str(entry["yield"]), font=("Helvetica", 12), wraplength=width/1.5, background="orange")
                         yield_label.grid(column=1, row=row_count, padx=5, pady=5, sticky=tk.W)
                     else:
-                        query_label = ttk.Label(upper_frame, text=query_string, font=("Helvetica", 12))
+                        query_label = ttk.Label(upper_frame, text=query_string, font=("Helvetica", 12), wraplength=width/1.5)
                         query_label.grid(column=0, row=row_count, padx=5, pady=5, sticky=tk.W)
 
-                        yield_label = ttk.Label(upper_frame, text=str(entry["yield"]), font=("Helvetica", 12))
+                        yield_label = ttk.Label(upper_frame, text=str(entry["yield"]), font=("Helvetica", 12), wraplength=width/1.5)
                         yield_label.grid(column=1, row=row_count, padx=5, pady=5, sticky=tk.W)
                 else:
                     query_string = entry["query"].to_string()
-                    if query_string in suggestion_list[-1] and query_string in suggestion_list[-2]:
-                        query_label = ttk.Label(upper_frame, text=query_string, font=("Helvetica", 12), background="orange")
+                    if query_string in suggestion_list[-1] and any(operator not in suggestion_list[-1] for operator in ["AND", "OR", "NOT"]):
+                        query_label = ttk.Label(upper_frame, text=query_string, font=("Helvetica", 12), wraplength=width/1.5, background="orange")
                         query_label.grid(column=0, row=row_count, padx=5, pady=5, sticky=tk.W)
 
-                        yield_label = ttk.Label(upper_frame, text=str(entry["yield"]), font=("Helvetica", 12), background="orange")
+                        yield_label = ttk.Label(upper_frame, text=str(entry["yield"]), font=("Helvetica", 12), wraplength=width/1.5, background="orange")
                         yield_label.grid(column=1, row=row_count, padx=5, pady=5, sticky=tk.W)
                     else:
-                        query_label = ttk.Label(upper_frame, text=query_string, font=("Helvetica", 12))
+                        query_label = ttk.Label(upper_frame, text=query_string, font=("Helvetica", 12), wraplength=width/1.5)
                         query_label.grid(column=0, row=row_count, padx=5, pady=5, sticky=tk.W)
 
-                        yield_label = ttk.Label(upper_frame, text=str(entry["yield"]), font=("Helvetica", 12))
+                        yield_label = ttk.Label(upper_frame, text=str(entry["yield"]), font=("Helvetica", 12), wraplength=width/1.5)
                         yield_label.grid(column=1, row=row_count, padx=5, pady=5, sticky=tk.W)
                 
             else:
@@ -130,7 +127,7 @@ class AnalyzerUI(tk.Tk):
         return upper_frame
 
 
-    def insert_suggestions(self, suggestion_list: list[str]) -> tk.Frame:
+    def insert_suggestions(self, suggestion_list: list[str], width: int) -> tk.Frame:
         '''Create second frame and insert suggestion text'''
 
         # create basic frame layout
@@ -146,7 +143,11 @@ class AnalyzerUI(tk.Tk):
         row_count = 1
 
         for entry in suggestion_list:
-            suggestion = ttk.Label(lower_frame, text=entry, font=("Helvetica", 12))
+            if suggestion_list.index(entry) > 1:
+                entry_string = CHESSPIECE.randomChessPiece() + " " + entry + "\n\n"
+            else:
+                entry_string = entry + "\n\n"
+            suggestion = ttk.Label(lower_frame, text=entry_string, font=("Helvetica", 12), wraplength=width/1.5)
             suggestion.grid(column=0, row=row_count, padx=5, pady=5, sticky=tk.W)
             row_count += 1
 
