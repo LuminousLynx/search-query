@@ -9,6 +9,7 @@ from search_query.or_query import OrQuery
 from search_query.query_analyzer.analyzer_constants import SUGGESTIONS
 from search_query.query_analyzer.analyzer_constants import YIELD
 
+
 # pylint: disable=line-too-long
 
 class QueryAdvisor():
@@ -30,28 +31,44 @@ class QueryAdvisor():
             self.suggestions.append(SUGGESTIONS.LITTLE_TOO_HIGH.value)
             self.suggestions.append("\n")
             problem_area = self.identify_high_yield(original_yield_list=yield_list)
-            self.suggestions.append("-> "+"\n-> ".join(query.to_string("pubmed") for query in problem_area if query.operator))
-            self.suggestions.append("-> "+"\n-> ".join(query.to_string() for query in problem_area if not query.operator))
+            
+            for query in problem_area:
+                if query.operator:
+                    self.suggestions.append(query.to_string(syntax="pubmed"))
+                else:
+                    self.suggestions.append(query.to_string())
 
         elif YIELD.is_low(main_query_yield):
             self.suggestions.append(SUGGESTIONS.LITTLE_TOO_LOW.value)
             self.suggestions.append("\n")
             problem_area = self.identify_low_yield(original_yield_list=yield_list)
-            self.suggestions.append("-> "+"\n-> ".join(query.to_string("pubmed") for query in problem_area if query.operator))
-            self.suggestions.append("-> "+"\n-> ".join(query.to_string() for query in problem_area if not query.operator))
+            
+            for query in problem_area:
+                if query.operator:
+                    self.suggestions.append(query.to_string(syntax="pubmed"))
+                else:
+                    self.suggestions.append(query.to_string())
 
         elif YIELD.is_dynamite(main_query_yield):
             self.suggestions.append(SUGGESTIONS.TOO_HIGH.value)
             problem_area = self.identify_high_yield(original_yield_list=yield_list)
-            self.suggestions.append("-> "+"\n-> ".join(query.to_string("pubmed") for query in problem_area if query.operator))
-            self.suggestions.append("-> "+"\n-> ".join(query.to_string() for query in problem_area if not query.operator))
+            
+            for query in problem_area:
+                if query.operator:
+                    self.suggestions.append(query.to_string(syntax="pubmed"))
+                else:
+                    self.suggestions.append(query.to_string())
 
         elif YIELD.is_restrictive(main_query_yield):
             self.suggestions.append(SUGGESTIONS.TOO_LOW.value)
             problem_area = self.identify_low_yield(original_yield_list=yield_list)
-            self.suggestions.append("-> "+"\n-> ".join(query.to_string("pubmed") for query in problem_area if query.operator))
-            self.suggestions.append("-> "+"\n-> ".join(query.to_string() for query in problem_area if not query.operator))
-        
+            
+            for query in problem_area:
+                if query.operator:
+                    self.suggestions.append(query.to_string(syntax="pubmed"))
+                else:
+                    self.suggestions.append(query.to_string())
+
         return self.suggestions
 
 
