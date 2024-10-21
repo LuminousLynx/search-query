@@ -65,6 +65,9 @@ Provide documentation for your implemented environment here.
 ## UI
 
 The results of the analysis of your query will be displayed in a simple Graphic User Interface (GUI). The upper partition of the GUI window displays your full query at the top left and the corresponding yield on the top right. The lines below indicate the respective yields of every subquery of your query. This visualization allows to identify problematic terms - those, whose yield is either extremely high or too low. 
+
+Currently, the optimal yield range is set from 200 to 2000 results. This is based on the PRISMA statement for systematic literature reviews. To change the yield range, you can edit <analyzer_constants.py>.
+
 The lower partition of the GUI displays the program's analysis of the yields, shows the identified problematic area and gives a recommendation on how to refine that specific area of the query. 
 
 To refine the query according to the analysis, simply close the GUI window and edit the query in the python file.
