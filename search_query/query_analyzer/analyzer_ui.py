@@ -5,7 +5,7 @@ import tkinter as tk
 from tkinter import ttk
 
 from search_query.query import Query
-from search_query.query_analyzer.analyzer_constants import CHESSPIECE
+from search_query.query_analyzer.analyzer_constants import BULLETPOINT
 
 # pylint: disable=line-too-long
 
@@ -144,7 +144,7 @@ class AnalyzerUI(tk.Tk):
 
         for entry in suggestion_list:
             if suggestion_list.index(entry) > 1:
-                entry_string = CHESSPIECE.randomChessPiece() + " " + entry + "\n\n"
+                entry_string = BULLETPOINT.insert_bullet_point() + " " + entry + "\n\n"
             else:
                 entry_string = entry + "\n\n"
             suggestion = ttk.Label(lower_frame, text=entry_string, font=("Helvetica", 12), wraplength=width/1.5)

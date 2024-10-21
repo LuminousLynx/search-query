@@ -60,16 +60,8 @@ class SUGGESTIONS(Enum):
     # This class can be extended to further improve useability of the query analyzer.
 
 
-class CHESSPIECE:
-    '''Chesspiece symbols for query visualization'''
+class BULLETPOINT:
+    '''Symbol for query visualization'''
     @staticmethod
-    def randomChessPiece() -> str:
-        chessPieces = (
-        u"\u2654",
-        u"\u2655",
-        u"\u2656",
-        u"\u2657",
-        u"\u2658",
-        u"\u2659"
-        )
-        return chessPieces[random.randint(0, len(chessPieces)-1)]
+    def insert_bullet_point() -> str:
+        return u'\u21D2'

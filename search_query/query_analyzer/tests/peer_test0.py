@@ -2,30 +2,12 @@
 """Integration test number 0 for the query analyzer"""
 
 '''
-Welcome, fellow human! I'm glad you volunteered to help me evaluate my program. 
-    
-This is an integration test for the query analyzer. If you have any questions regarding this program, please check out the anayzer_README file or fell free to ask me. 
+Welcome to Query Advisor! 
 
-If not: Great! Let's run the program and find out if it works for you! 
+To conduct this test with the original query described below, simply run this python file after you completed all necessary installations.
+View the analyzer documentation for further questions and guidance. 
 
-Your mission, should you choose to accept it, is to...
-    ...run this python file. It will analyze the yield of the original query and display the results in a GUI window. 
-    There, it will give you recommendations on how to improve the query. Close the window, improve the query in this file according to the recommendations and run the file again.
-    Your target yield for the main query is between 200 and 2000. 
-
-    Good Luck! 
-
-This machine will self-destruct in 5 seconds.
-
-...4...
-
-...3...
-
-...2...
-
-Just kidding. Or am I?
-
-...1...
+Thank you for partitioning in this test program!
 '''
 
 from search_query.query import Query
