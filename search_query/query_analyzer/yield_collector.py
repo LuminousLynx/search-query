@@ -146,7 +146,7 @@ class YieldCollector():
             sibling_sample = [element for element, count in doi_frequencies.items() if count == len(sibling_queries)]
             query_yield = int(math.ceil(len(sibling_sample) / len(sibling_doi_list)) * sum([self.get_yield_by_query(yield_list=yield_list, query=sibling) for sibling in sibling_queries]))
             
-        this_sample = self.get_doi_by_query(doi_list=doi_list, query=query)
+        this_sample = self.get_doi_by_query(doi_list=doi_list, query=query.children)
 
         for doi in sibling_sample:
             if doi in this_sample:
