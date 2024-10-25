@@ -78,10 +78,10 @@ class YieldCollector():
                 continue
 
             if isinstance(query, OrQuery):
-                query_results = self.collect_or_estimated(query=query, doi_list=doi_list)
+                query_results = self.collect_or_estimated(query=query, yield_list=yield_list, doi_list=doi_list)
 
             elif isinstance(query, AndQuery):
-                query_results = self.collect_and_estimated(yield_list=yield_list, query=query, doi_list=doi_list)
+                query_results = self.collect_and_estimated(query=query, yield_list=yield_list, doi_list=doi_list)
 
             elif isinstance(query, NotQuery):
                 query_results = self.collect_not_estimated(yield_list=yield_list, query=query, complex_query_list=complex_query_list, api=api)
@@ -105,12 +105,17 @@ class YieldCollector():
         return yield_list
     
 
-    def collect_or_estimated(self, query: Query, doi_list: list[dict] = None) -> list[dict]:
+    def collect_or_estimated(self, query: Query, yield_list: list[dict], doi_list: list[dict] = None) -> list[dict]:
         '''Method for collecting estimated yields and DOI samples for OR queries'''
 
         children_doi_list = [{"query": child, "dois": self.get_doi_by_query(doi_list=doi_list, query=child)} for child in query.children]
-        no_duplicate_sample = set([item for sublist in [child["dois"] for child in children_doi_list] for item in sublist])
-        return {"yield": len(no_duplicate_sample), "dois": no_duplicate_sample}
+        children_yield_list = [self.get_yield_by_query(yield_list=yield_list, query=child) for child in query.children]
+        children_sample = [item for sublist in [child["dois"] for child in children_doi_list] for item in sublist]
+        no_duplicate_sample = set(children_sample)
+
+        estimated_yield = int(math.ceil(sum(children_yield_list) - sum(children_yield_list) * ((len(children_sample) - len(no_duplicate_sample)) / len(children_sample))))
+        
+        return {"yield": estimated_yield, "dois": no_duplicate_sample}
 
 
     def collect_and_estimated(self, yield_list: list[dict], query: Query, doi_list: list[dict] = None) -> list[dict]:
@@ -137,16 +142,24 @@ class YieldCollector():
 
         if isinstance(parent_query, OrQuery):
             sibling_doi_list = [{"query": sibling, "dois": self.get_doi_by_query(doi_list=doi_list, query=sibling)} for sibling in sibling_queries]
-            sibling_sample = set([item for sublist in [sibling["dois"] for sibling in sibling_doi_list] for item in sublist])
-            query_yield = len(sibling_sample)
+            sibling_yield_list = [self.get_yield_by_query(yield_list=yield_list, query=sibling) for sibling in sibling_queries]
+
+            total_sibling_sample = [item for sublist in [sibling["dois"] for sibling in sibling_doi_list] for item in sublist]
+            sibling_sample = set(sibling_sample)
+
+            estimated_yield = int(math.ceil(sum(sibling_yield_list) - sum(sibling_yield_list) * ((len(total_sibling_sample) - len(sibling_sample)) / len(total_sibling_sample))))
+            query_yield = estimated_yield
         
         elif isinstance(parent_query, AndQuery):
             sibling_doi_list = [{"query": sibling, "dois": self.get_doi_by_query(doi_list=doi_list, query=sibling)} for sibling in sibling_queries]
             doi_frequencies = Counter(sibling_doi_list)
             sibling_sample = [element for element, count in doi_frequencies.items() if count == len(sibling_queries)]
             query_yield = int(math.ceil(len(sibling_sample) / len(sibling_doi_list)) * sum([self.get_yield_by_query(yield_list=yield_list, query=sibling) for sibling in sibling_queries]))
-            
-        this_sample = self.get_doi_by_query(doi_list=doi_list, query=query.children)
+
+        this_sample = []
+        
+        for child in query.children:    
+            this_sample.extend(self.get_doi_by_query(doi_list=doi_list, query=child))
 
         for doi in sibling_sample:
             if doi in this_sample:
