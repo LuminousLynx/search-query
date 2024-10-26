@@ -23,9 +23,9 @@ class TestQueryAdvisor:
 
     def test_identify_high_yield(self, advisor):
         yield_list = [
-            {"query": AndQuery(), "yield": 100},
-            {"query": OrQuery(), "yield": 90},
-            {"query": NotQuery(), "yield": 80}
+            {"query": AndQuery(), "yield": 10000},
+            {"query": OrQuery(), "yield": 9000},
+            {"query": NotQuery(), "yield": 8000}
         ]
         problem_area = advisor.identify_high_yield(yield_list)
         assert isinstance(problem_area, list)
